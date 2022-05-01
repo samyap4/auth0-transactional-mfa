@@ -5,19 +5,16 @@ import { Transition, Disclosure, Menu } from '@headlessui/react'
 import { BellIcon } from '@heroicons/react/outline'
 
 export default function App() {
-  const {user, loginWithRedirect} = useAuth0();
+  const { user, loginWithRedirect } = useAuth0();
   
-  const handleLinkSubmit = (evt) => {
-    evt.preventDefault();
-    createUser();
-  }
+  const { balanceTransfered, setBalanceTransfered } = useState(false);
 
-  const createUser = () => {
-    fetch(process.env.REACT_APP_API_BASE_URL + 'create-user')
-    .then(response => response.json())
-    .then(data => fetch(process.env.REACT_APP_API_BASE_URL + 'link-user?id=' + data.user_id)
-    .then(data => loginWithRedirect()));
-  }
+  useEffect(() => {
+    console.log(user);
+    if (user?.['amr']?.indexOf('mfa') >= 0) {
+      setBalanceTransfered(true);
+    }
+  }, [user]);
 
   const classNames = (...classes) => {
     return classes.filter(Boolean).join(' ')
@@ -175,6 +172,9 @@ export default function App() {
                           <th scope="col" class="px-6 py-3">
                               Email
                           </th>
+                          <th scope="col" class="px-6 py-3">
+                              Balance
+                          </th>
                       </tr>
                   </thead>
                   <tbody>
@@ -185,11 +185,29 @@ export default function App() {
                           <td class="px-6 py-4 dark:text-white whitespace-nowrap font-medium">
                             {user.email}
                           </td>
+                          <td class="px-6 py-4 dark:text-white whitespace-nowrap font-medium">
+                            {balanceTransfered ? '$0.00' : '$100,000.00'}
+                          </td>
                       </tr>
                   </tbody>
               </table>
           </div>
           <br></br>
+          {!balanceTransfered && 
+          <>
+            <button 
+              onClick={()=>loginWithRedirect({acr_values: 'http://schemas.openid.net/pape/policies/2007/06/multi-factor'})} 
+              style={{display: 'inline-block'}}
+              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+              Transfer Balance
+            </button>
+            <br></br>
+            <br></br>
+          </>
+            
+          }
+          
           <LogoutButton />
         </div>
       }
