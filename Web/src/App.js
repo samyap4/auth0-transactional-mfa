@@ -1,19 +1,23 @@
-import React, { useState, Fragment, useEffect } from 'react'
+import React, { useState, Fragment, useEffect, useCallback } from 'react'
 import LogoutButton from './components/LogoutButton'
 import { useAuth0 } from '@auth0/auth0-react'
 import { Transition, Disclosure, Menu } from '@headlessui/react'
 import { BellIcon } from '@heroicons/react/outline'
 
 export default function App() {
-  const { user, loginWithRedirect } = useAuth0();
+  const { user, loginWithRedirect, getIdTokenClaims } = useAuth0();
   
-  const { balanceTransfered, setBalanceTransfered } = useState(false);
+  const [ balanceTransfered, setBalanceTransfered ] = useState(false);
 
-  useEffect(() => {
-    console.log(user);
-    if (user?.['amr']?.indexOf('mfa') >= 0) {
+  const getClaims = useCallback(async () => {
+    const data = await getIdTokenClaims();
+    if (data?.amr?.indexOf('mfa') > -1) {
       setBalanceTransfered(true);
     }
+  }, [])
+
+  useEffect(() => {
+    getClaims();
   }, [user]);
 
   const classNames = (...classes) => {
