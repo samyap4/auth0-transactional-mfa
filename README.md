@@ -10,8 +10,8 @@ https://auth0.com/docs/secure/multi-factor-authentication/step-up-authentication
 Here is the action I am using in my Auth0 tenant to make this work:
 
 ```exports.onExecutePostLogin = async (event, api) => {
-  if (event.request.query.acr_values === 'http://schemas.openid.net/pape/policies/2007/06/multi-factor') {
-    api.multifactor.enable('any');
-  }
-};```
+     if (event.request.query.acr_values === 'http://schemas.openid.net/pape/policies/2007/06/multi-factor') {
+       api.multifactor.enable('any');
+     }
+   };
 
