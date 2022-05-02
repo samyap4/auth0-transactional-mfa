@@ -18,7 +18,7 @@ export default function App() {
 
   useEffect(() => {
     getClaims();
-  }, [user]);
+  }, [user])
 
   const classNames = (...classes) => {
     return classes.filter(Boolean).join(' ')
